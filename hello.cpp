@@ -133,7 +133,7 @@ public:
     static BigInteger add(BigInteger a, BigInteger b){
         string zero = "";
         BigInteger ans = BigInteger(zero);
-        int sum = 0, x = 0;
+        int sum = 0, x = 0;//某位之和, 进位标识
 
         if(a.isZero()){
             ans = a;
@@ -142,21 +142,24 @@ public:
             ans = b;
         }
 
-        if(a.sign == false && b.sign == true){
+        // 下面假设a>0 b>0来说明
+        if(a.sign == false && b.sign == true){// -a+b -> b-a
             a.sign = true;
             ans = minus(b, a);
             return ans;
         }
 
-        if(a.sign == true && b.sign == false){
+        if(a.sign == true && b.sign == false){// a+(-b) -> a-b
             b.sign = true;
             ans = minus(a, b);
             return ans;
         }
 
+        //将a, b翻转来从尾端开始相加
         reverse(a.num.begin(), a.num.end());
         reverse(b.num.begin(), b.num.end());
 
+        //保证左长右短(就是竖式里的上长下短)
         if(a.num.size() < b.num.size()){
             swap(a, b);
         }
@@ -167,7 +170,7 @@ public:
         for (int pos = 0; pos < a.num.size();pos++){
             sum = a.num[pos] + b.num[pos] + x;
             ans.num.push_back(sum % 10);
-            x = sum / 10;
+            x = sum / 10;//计算是否进位
             sum = 0;
         }
         if(x!=0)
@@ -175,7 +178,7 @@ public:
         ans.sign = a.sign;
         reverse(ans.num.begin(), ans.num.end());
         ans = ans.removeLeadingZero();
-        if(ans.num.size() == 0)
+        if(ans.num.size() == 0)//如果为空补个零
             ans.num.push_back(0);
         return ans;
     }
@@ -185,6 +188,7 @@ public:
         BigInteger ans = BigInteger(zero);
         int x = 0;
 
+        //减数为零, 返回原值
         if(b.isZero()){
             ans = a;
             return a;
@@ -193,18 +197,19 @@ public:
             ans.num.push_back(0);
             return ans;
         }
-        if(a.sign == true && b.sign == false){
+        //下面假设a>0 b>0来说明
+        if(a.sign == true && b.sign == false){// a - (-b) -> a + b
             b.sign = true;
             ans = add(a, b);
             return ans;
         }
-        if(a.sign == false && b.sign == true){
+        if(a.sign == false && b.sign == true){// (-a) - b -> -(a + b)
             a.sign == true;
             ans = add(a, b);
             ans.sign = false;
             return ans;
         }
-        if(a.sign == false && b.sign == false){
+        if(a.sign == false && b.sign == false){// (-a) - (-b) -> b - a
             b.sign = true;
             ans = add(a, b);
             return ans;
@@ -224,7 +229,7 @@ public:
         }
 
         for (int pos = 0; pos < b.num.size();pos++){
-            if(a.num[pos] < b.num[pos] || a.num[pos] < 0){
+            if(a.num[pos] < b.num[pos] || a.num[pos] < 0){//需要借位
                 int temp = a.num[pos + 1] - 1;
                 a.num[pos + 1] = temp;
                 x = 10;
@@ -235,7 +240,7 @@ public:
 
         reverse(ans.num.begin(), ans.num.end());
         ans = ans.removeLeadingZero();
-        if(ans.num.size() == 0)
+        if(ans.num.size() == 0)//为空补零
             ans.num.push_back(0);
         return ans;
     }
@@ -266,6 +271,5 @@ int main(int argc, char* argv[]){
     }else{
         cout << BigInteger::minus(a, b).toString() << endl;
     }
-
     return 0;
 }
