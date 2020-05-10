@@ -130,7 +130,9 @@ public:
         return -2;
     }
 
-    static BigInteger add(BigInteger a, BigInteger b){
+    static BigInteger add(BigInteger &ina, BigInteger &inb){
+        BigInteger a = BigInteger(ina.toString());
+        BigInteger b = BigInteger(inb.toString());
         string zero = "";
         BigInteger ans = BigInteger(zero);
         int sum = 0, x = 0;//某位之和, 进位标识
@@ -267,9 +269,9 @@ int main(int argc, char* argv[]){
     BigInteger left = BigInteger(a), right = BigInteger(b);
 
     if(sign == "+"){
-        cout << BigInteger::add(a, b).toString() << endl;
+        cout << BigInteger::add(left, right).toString() << endl;
     }else{
-        cout << BigInteger::minus(a, b).toString() << endl;
+        cout << BigInteger::minus(left, right).toString() << endl;
     }
     return 0;
 }
