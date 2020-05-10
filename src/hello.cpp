@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <windows.h>//计时用
 using namespace std;
 
 class BigInteger {
@@ -130,6 +131,7 @@ public:
         return -2;
     }
 
+    //a+b
     static BigInteger add(BigInteger &ina, BigInteger &inb){
         BigInteger a = BigInteger(ina.toString());
         BigInteger b = BigInteger(inb.toString());
@@ -187,6 +189,7 @@ public:
         return ans;
     }
 
+    //a-b
     static BigInteger minus(BigInteger a, BigInteger b){
         string zero = "";
         BigInteger ans = BigInteger(zero);
@@ -249,6 +252,8 @@ public:
         return ans;
     }
 
+    //对两个vector的乘法进行计算
+    //本来计划还有除法, 但是时间不够了 :(
     static vector<int> multi(vector<int> x, vector<int> y){
         unsigned long long r;
         size_t lenx = x.size(), leny = y.size();
@@ -323,6 +328,14 @@ int main(int argc, char* argv[]){
 
         BigInteger left = BigInteger(a), right = BigInteger(b);
 
+        LARGE_INTEGER  large_interger;
+        double dff;
+        __int64  c1, c2;
+        QueryPerformanceFrequency(&large_interger);
+        dff = large_interger.QuadPart;
+        QueryPerformanceCounter(&large_interger);
+        c1 = large_interger.QuadPart;
+
         if(sign == "+") {
             cout << BigInteger::add(left, right).toString() << endl;
         }else if(sign == "-") {
@@ -330,6 +343,10 @@ int main(int argc, char* argv[]){
         }else if(sign == "*" || sign == "x") {
             cout << BigInteger::multiply(left, right).toString() << endl;
         }
+        
+        QueryPerformanceCounter(&large_interger);
+        c2 = large_interger.QuadPart;
+        cout << "Time Consumed in ms: " << (c2 - c1) * 1000 / dff << endl;
         system("pause");
     }
     return 0;
