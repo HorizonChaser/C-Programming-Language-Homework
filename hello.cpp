@@ -250,7 +250,7 @@ public:
 int main(int argc, char* argv[]){
     string a, b, sign;
     cin >> a >> sign >> b;
-
+    //0
     if(BigInteger::isVaild(a) == false){
         cout << "Invalid First Value: " << a << endl;
         return 0;
