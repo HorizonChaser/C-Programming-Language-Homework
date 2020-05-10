@@ -138,10 +138,12 @@ public:
         int sum = 0, x = 0;//某位之和, 进位标识
 
         if(a.isZero()){
-            ans = a;
+            ans = b;
+            return ans;
         }
         if(b.isZero()){
-            ans = b;
+            ans = a;
+            return ans;
         }
 
         // 下面假设a>0 b>0来说明
@@ -247,31 +249,88 @@ public:
         return ans;
     }
 
+    static vector<int> multi(vector<int> x, vector<int> y){
+        unsigned long long r;
+        size_t lenx = x.size(), leny = y.size();
+        vector<int> result(lenx + leny, 0); //预分配空间
+        for(size_t i = 0; i < leny; ++i)
+        {
+            r = 0;
+            size_t j, k;// k为移位的个数
+            for(j = 0, k = i; j < lenx; ++j, ++k)
+            {
+                r += (y[i]) * x[j] + result[k];
+                result[k] = unsigned(r);
+                r >>= 32;
+            }
+            result[k] = unsigned(r);
+        }
+        return move(result);//移交所有权
+    }
+
+    static BigInteger multiply(BigInteger &a, BigInteger &b){
+        BigInteger left = BigInteger(a.toString()),
+                   right = BigInteger(b.toString()),
+                   ans = BigInteger(string(""));
+        
+        if(left.sign != right.sign)
+            ans.sign = false;
+        if(left.isZero() || right.isZero()){
+            ans.num.push_back(0);
+            ans.sign = true;
+            return ans;
+        }
+
+        ans.num = multi(left.num, right.num);
+        ans.num.pop_back();
+        return ans;
+    }
 };
 
 int main(int argc, char* argv[]){
     string a, b, sign;
-    cin >> a >> sign >> b;
-    //0
-    if(BigInteger::isVaild(a) == false){
-        cout << "Invalid First Value: " << a << endl;
-        return 0;
-    }
-    if(BigInteger::isVaild(b) == false){
-        cout << "Invalid Second Value: " << b << endl;
-        return 0;
-    }
-    if(sign != "+" && sign != "-"){
-        cout << "Invalid Sign Given: " << sign << endl;
-        return 0;
-    }
+    cout << "-----------------------------------------" << endl;
+    cout << "Simple Calc by HorizonChaser based on C++" << endl;
+    cout << "Supported Operators: plus + " << endl;
+    cout << "                     minus - " << endl;
+    cout << "                     multiply * or x " << endl;
+    cout << "To Exit, Input . for 3 Times " << endl;
+    cout << "Have fun ~" << endl;
+    cout << "-----------------------------------------" << endl;
 
-    BigInteger left = BigInteger(a), right = BigInteger(b);
+    while(true){
+        cin >> a >> sign >> b;
+        if(a == "." && b == "." && sign == "."){
+            cout << "Thanks for Using. Powered by Teacher Yao, Determination, VS Code and C++" << endl;
+            cout << "Exiting Now... " << endl;
+            return 0;
+        }
+        if(BigInteger::isVaild(a) == false){
+            cout << "Invalid First Value: " << a << endl;
+            system("pause");
+            continue;
+        }
+        if(BigInteger::isVaild(b) == false){
+            cout << "Invalid Second Value: " << b << endl;
+            system("pause");
+            continue;
+        }
+        if(sign != "+" && sign != "-" && sign != "*" && sign != "x"){
+            cout << "Invalid Sign Given: " << sign << endl;
+            system("pause");
+            continue;
+        }
 
-    if(sign == "+"){
-        cout << BigInteger::add(left, right).toString() << endl;
-    }else{
-        cout << BigInteger::minus(left, right).toString() << endl;
+        BigInteger left = BigInteger(a), right = BigInteger(b);
+
+        if(sign == "+") {
+            cout << BigInteger::add(left, right).toString() << endl;
+        }else if(sign == "-") {
+            cout << BigInteger::minus(left, right).toString() << endl;
+        }else if(sign == "*" || sign == "x") {
+            cout << BigInteger::multiply(left, right).toString() << endl;
+        }
+        system("pause");
     }
     return 0;
 }
