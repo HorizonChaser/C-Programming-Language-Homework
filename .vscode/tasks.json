@@ -39,7 +39,7 @@
             "args": [
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}.exe",
+                "${fileDirname}/bin/${fileBasenameNoExtension}.exe",
                 "-g",
                 "-Wall",
                 "-static-libgcc",
@@ -65,7 +65,7 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}/bin/${fileBasenameNoExtension}.exe"
             ],
             "options": {
                 "cwd": "C:/MinGW64/bin"
