@@ -4,10 +4,10 @@
 
 typedef struct CStack
 {
-    char *data;
     int pos;
     int size;
     int dataNum;
+    char* data;
 }CStack;
 
 int initStack(CStack* stack) {
@@ -28,6 +28,7 @@ CStack* enlargeStack(CStack* stack) {
     if(newStack == NULL) {
         return NULL;
     }
+    memset(newStack, NULL, 10 * stack->size * sizeof(char *));
     memcpy(newStack, stack, 10 * stack->size/2 * sizeof(char *));
     stack->data = newStack;
     return stack;
@@ -37,7 +38,9 @@ int printAll(CStack* stack) {
     if(stack == NULL || stack->pos == 0)
         return -1;
     for (int i = 0; i < stack->pos;i++) {
-        printf("%p\n", (stack->data[i]));
+        //char *a = (char *)(stack->data[i]);
+        //printf("%p\n", a);
+        printf("%s\n", (char*)(stack->data[i]));
     }
     return 0;
 }
@@ -53,7 +56,8 @@ int push(CStack* stack, char* newData) {
             return -1;
         }
     }
-    stack->data[stack->pos] =(char*) newData;
+    char *p = stack->data + stack->pos * (sizeof(char *));
+    *p = newData;
     stack->pos++;
     return 0;
 }
