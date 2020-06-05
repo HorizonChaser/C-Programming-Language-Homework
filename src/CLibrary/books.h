@@ -70,4 +70,14 @@ book* searchBookByName(bookList* lib, char* searchingName) {
     return NULL;
 }
 
+book* searchBookByBookID(bookList* booklist, const int inBookID) {
+    bookList* curr = booklist;
+    while(curr->next != NULL) {
+        if(curr->book->bookID == inBookID) {
+            return curr->book;
+        }
+    }
+    return NULL;
+}
+
 #endif

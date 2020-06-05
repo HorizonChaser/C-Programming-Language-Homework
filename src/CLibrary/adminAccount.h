@@ -32,4 +32,22 @@ bool addBooks(bookList* lib, book* newBook) {
     return true;
 }
 
+bool addStuAccount(stuList* stulist, student* newStuAcc) {
+    stuList* curr = stulist->next;
+    while (curr->next != NULL) {
+        if (curr->stu->stuID == newStuAcc->stuID) {
+            printf("Student with Same stuID Already Exists.\nFailed to Add This Student.\n");
+            return false;
+        }
+        if (strcmp(curr->stu->name, newStuAcc->name) == 0) {
+            printf("Student with Same Name Already Exists.\nFailed to Add This Student.\n");
+            return false;
+        }
+    }
+    stuList* newNode = (stuList*)malloc(sizeof(stuList));
+    newNode->stu = newStuAcc;
+    newNode->next = NULL;
+    return true;
+}
+
 #endif
