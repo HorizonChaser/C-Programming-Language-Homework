@@ -117,4 +117,17 @@ student* searchStuAccountByStuID(stuList* stulist, int stuID) {
     return NULL;
 }
 
+void viewBorrowers(stuList* stulist, book* book) {
+    if(book->totalNum == book->remainNum) {
+        printf("This Book Hasn't Been Borrowed Yet. Nothing to Show.\n");
+        return;
+    }
+    int borrowNum = book->totalNum - book->remainNum;
+    for (int i = 0; i < borrowNum;i++) {
+        printf("stuID\tName\n----------------\n");
+        student* currStudent = searchStuAccountByStuID(stulist, book->borrowingStuID[i]);
+        printf("%d\t%s\n", currStudent->stuID, currStudent->name);
+    }
+}
+
 #endif

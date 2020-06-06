@@ -60,8 +60,6 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    
-    
     exportToFileSystem(booklist, stulist, 2, 2);
     importFromFileSystem(booklist, stulist);
     printallBook(booklist);
@@ -82,6 +80,6 @@ int main(int argc, char* argv[]) {
     printf("|         7. Exit the C Library                                 |\n");
     printf("└---------------------------------------------------------------┘\n");
 
-    //viewBorrowers(stulist, book2);
+    viewBorrowers(stulist, book2);
     return 0;
 }

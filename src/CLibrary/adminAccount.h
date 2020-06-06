@@ -168,8 +168,6 @@ bool importFromFileSystem(bookList* booklist, stuList* stulist) {
 
     book* bookBuffer = (book*)malloc(sizeof(book));
     student* stuBuffer = (student*)malloc(sizeof(student));
-    bookList* currBook = booklist;
-    stuList* currStu = stulist;
     char* checkFileHeader = (char*)malloc(20 * sizeof(char));
     int bookNum = 0, stuNum = 0;
 
