@@ -107,4 +107,14 @@ void printAllBorringBooks(student* stu, bookList* booklist) {
     }
 }
 
+student* searchStuAccountByStuID(stuList* stulist, int stuID) {
+    stuList* curr = stulist->next;
+    while(curr != NULL) {
+        if(curr->stu->stuID == stuID)
+            return curr->stu;
+        curr = curr->next;
+    }
+    return NULL;
+}
+
 #endif

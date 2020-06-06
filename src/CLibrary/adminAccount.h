@@ -127,14 +127,16 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
     fprintf(bookFile, "Senren*Banka\n%d\n", bookNum);
     bookList* currBook = booklist->next;
     for (int i = 0; i < bookNum; i++) {
+        if (currBook == NULL)
+            break;
         fprintf(bookFile, "%d\t%s\t%d\t", currBook->book->bookID, currBook->book->name, currBook->book->authorNum);
-        for (int authorCnt = 0; authorCnt < currBook->book->authorNum; authorCnt++) {
-            fprintf(bookFile, "%s,", currBook->book->author[authorCnt]);
-        }
-        fprintf(bookFile, "\t");
         fprintf(bookFile, "%d\t%d\t", currBook->book->totalNum, currBook->book->remainNum);
         for (int i = 0; i < currBook->book->totalNum - currBook->book->remainNum; i++) {
             fprintf(bookFile, "%d,", currBook->book->borrowingStuID[i]);
+        }
+        fprintf(bookFile, "\t");
+        for (int authorCnt = 0; authorCnt < currBook->book->authorNum; authorCnt++) {
+            fprintf(bookFile, "%s,", currBook->book->author[authorCnt]);
         }
         fprintf(bookFile, "\n");
         currBook = currBook->next;
@@ -146,7 +148,7 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
     for (int i = 0; i < stuNum; i++) {
         fprintf(stuFile, "%d\t%s\t", currStu->stu->stuID, currStu->stu->name);
         fprintf(stuFile, "%d\t", currStu->stu->borrowingBookNum);
-        for (int borrowingNum = 0; borrowingNum < currStu->stu->borrowingBookNum;borrowingNum++) {
+        for (int borrowingNum = 0; borrowingNum < currStu->stu->borrowingBookNum; borrowingNum++) {
             fprintf(stuFile, "%d,", currStu->stu->borrowingBooks[borrowingNum]);
         }
         fprintf(stuFile, "\n");
@@ -154,6 +156,58 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
     }
     fclose(stuFile);
 
+    return true;
+}
+
+bool importFromFileSystem(bookList* booklist, stuList* stulist) {
+    FILE *bookFile, *stuFile;
+    bookFile = fopen("book.libdata", "r+");
+    stuFile = fopen("stu.libdata", "r+");
+    bool fileCorruptFlag = false;
+    srand(0);
+
+    book* bookBuffer = (book*)malloc(sizeof(book));
+    student* stuBuffer = (student*)malloc(sizeof(student));
+    bookList* currBook = booklist;
+    stuList* currStu = stulist;
+    char* checkFileHeader = (char*)malloc(20 * sizeof(char));
+    int bookNum = 0, stuNum = 0;
+
+    fscanf(bookFile, "%s\n%d\n", checkFileHeader, &bookNum);
+    if (strcmp(checkFileHeader, "Senren*Banka") != 0) {
+        printf("Corrupted Book Info File, Nothing Will Be Imported\n");
+        fileCorruptFlag = true;
+    }
+    fscanf(stuFile, "%s\n%d\n", checkFileHeader, &stuNum);
+    if (strcmp(checkFileHeader, "YuzuSoft") != 0) {
+        printf("Corrupted Student Info File, Nothing Will Be Imported\n");
+        fileCorruptFlag = true;
+    }
+    if (fileCorruptFlag)
+        return false;
+
+    for (int num = 0; num < bookNum; num++) {
+        fscanf(bookFile, "%d\t%s\t%d\t", &bookBuffer->bookID, bookBuffer->name, &bookBuffer->authorNum);
+        fscanf(bookFile, "%d\t%d\t", &bookBuffer->totalNum, &bookBuffer->remainNum);
+        for (int i = 0; i < bookBuffer->totalNum - bookBuffer->remainNum; i++) {
+            fscanf(bookFile, "%d,", &bookBuffer->borrowingStuID[i]);
+        }
+        for (int authorCnt = 0; authorCnt < bookBuffer->authorNum; authorCnt++) {
+            fscanf(bookFile, "%s,", bookBuffer->author[authorCnt]);
+        }
+        addBooks(booklist, bookBuffer);
+        bookBuffer = (book*)malloc(sizeof(book));
+    }
+    fclose(bookFile);
+
+    for (int num = 0; num < stuNum; num++) {
+        fscanf(stuFile, "%d\t%s\t%d\t", &stuBuffer->stuID, stuBuffer->name, &stuBuffer->borrowingBookNum);
+        for (int borrowingCnt = 0; borrowingCnt < stuBuffer->borrowingBookNum;borrowingCnt++) {
+            fscanf(stuFile, "%d,", &stuBuffer->borrowingBooks[borrowingCnt]);
+        }
+        addStuAccount(stulist, stuBuffer);
+        stuBuffer = (student*)malloc(sizeof(student));
+    }
     return true;
 }
 

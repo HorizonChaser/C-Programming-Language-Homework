@@ -1,4 +1,4 @@
 Senren*Banka
 2
-11	asd	1	dsv,	20	19	1002,
-10	test	2	dsv,dev2,	20	19	1002,
+11	asd	1	20	19	1002,	dsv,
+10	test	2	20	19	1002,	dsv,dev2,

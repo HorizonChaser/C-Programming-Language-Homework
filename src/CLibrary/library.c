@@ -60,7 +60,11 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    
+    
     exportToFileSystem(booklist, stulist, 2, 2);
+    importFromFileSystem(booklist, stulist);
+    printallBook(booklist);
 
     student* currStudent = stu1;
     printf("┌-----| Welcome to use C Library written by HorizonChaser |-----┐\n");
@@ -77,5 +81,7 @@ int main(int argc, char* argv[]) {
     printf("|         6. List All Existing Books in the Library             |\n");
     printf("|         7. Exit the C Library                                 |\n");
     printf("└---------------------------------------------------------------┘\n");
+
+    //viewBorrowers(stulist, book2);
     return 0;
 }
