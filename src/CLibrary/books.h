@@ -1,11 +1,6 @@
 #ifndef BOOKS
 #define BOOKS
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "structs.h"
 
 book* initializeBook(const char* name, char* author[], const int authorNum,
@@ -44,38 +39,53 @@ void printlnBook(const book book) {
     printf("\n");
 }
 
-bool bookCompare(book a, book b) {
-    if (a.bookID != b.bookID || a.authorNum != b.authorNum) return false;
-    if (strcmp(a.name, b.name) != 0) return false;
+void printlnSheetTitle(void) {
+    printf("bookID\tRemain\tTotal\tName\tAuthor(s)\n");
+    printf("-----------------------------------------\n");
+}
+
+bool compareAuthors(book a, book b) {
+    if (a.authorNum != b.authorNum)
+        return false;
     for (int i = 0; i < a.authorNum; i++) {
-        if (strcmp(a.author[i], b.author[i]) != 0) return false;
+        if (strcmp(a.author[i], b.author[i]) != 0)
+            return false;
     }
     return true;
 }
 
+int bookCompare(book a, book b) {
+    if (a.bookID == b.bookID && strcmp(a.name, b.name) == 0 && compareAuthors(a, b) == true)
+        return 0;
+    if (a.bookID == b.bookID)
+        return 1;
+    if (strcmp(a.name, b.name) == 0 && compareAuthors(a, b) == true)
+        return 2;
+    return -1;
+}
+
 book* searchBookByName(bookList* lib, char* searchingName) {
-    bookList* curr = lib;
-    while (curr->next != NULL) {
+    bookList* curr = lib->next;
+    while (curr != NULL) {
         if (strcmp(curr->book->name, searchingName) == 0) {
             printf("Book with Name Found. Details Are As Follows.\n");
-            printf("bookID\tRemain Num\tTotal Num\tName\tAuthor(s)\n");
-            printf(
-                "-------------------------------------------------------------"
-                "\n");
+            printlnSheetTitle();
             printlnBook(*curr->book);
             return curr->book;
         }
+        curr = curr->next;
     }
     printf("Book with Given Name Not Found: %s", searchingName);
     return NULL;
 }
 
 book* searchBookByBookID(bookList* booklist, const int inBookID) {
-    bookList* curr = booklist;
-    while(curr->next != NULL) {
-        if(curr->book->bookID == inBookID) {
+    bookList* curr = booklist->next;
+    while (curr != NULL) {
+        if (curr->book->bookID == inBookID) {
             return curr->book;
         }
+        curr = curr->next;
     }
     return NULL;
 }

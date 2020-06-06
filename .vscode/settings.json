@@ -7,8 +7,8 @@
 
     "code-runner.runInTerminal": true, // 设置成false会在“输出”中输出，无法输入
     "code-runner.executorMap": {
-        "c": "cd $dir && gcc '$fileName' -o 'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe' -Wall -g -O2 -static-libgcc -std=c11 -fexec-charset=UTF-8 && &'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe'",
-        "cpp": "cd $dir && g++ '$fileName' -o 'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe' -Wall -g -O2 -static-libgcc -std=c++17 -fexec-charset=UTF-8 && &'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe'"
+        "c": "cd $dir && gcc '$fileName' -o 'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe' -Wall -g -O0 -static-libgcc -std=c11 -fexec-charset=UTF-8 && &'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe'",
+        "cpp": "cd $dir && g++ '$fileName' -o 'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe' -Wall -g -O0 -static-libgcc -std=c++17 -fexec-charset=UTF-8 && &'C:/VSCode_workspace/vscode-workspace/bin/$fileNameWithoutExt.exe'"
         // "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt.exe -Wall -g -O2 -static-libgcc -std=c11 -fexec-charset=GBK && $dir$fileNameWithoutExt",
         // "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt.exe -Wall -g -O2 -static-libgcc -std=c++17 -fexec-charset=GBK && $dir$fileNameWithoutExt"
     }, // 右键run code时运行的命令；未注释的仅适用于PowerShell（Win10默认），文件名中有空格也可以编译运行；注释掉的适用于cmd（win7默认），PS和bash也能用，但文件名中有空格时无法运行
