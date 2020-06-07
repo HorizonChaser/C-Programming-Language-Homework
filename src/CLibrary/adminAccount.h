@@ -53,11 +53,11 @@ bool removeBook(bookList* booklist, int bookID) {
             printlnBook(*searchBookByBookID(booklist, bookID));
 
             bookList* former = booklist;
-            while (former->next != curr) {//找到这本书在链表上的前一个结点
+            while (former->next != curr) {  //找到这本书在链表上的前一个结点
                 former = former->next;
             }
-            former->next = former->next->next;//将前一个结点和后一个结点连接起来
-            free(curr);//删除当前节点
+            former->next = former->next->next;  //将前一个结点和后一个结点连接起来
+            free(curr);                         //删除当前节点
             printf("Book(bookID %d) Successfully Removed\n", bookID);
             return false;
         }
@@ -103,8 +103,8 @@ bool removeStuAccount(stuList* stulist, int stuID) {
             while (former->next != curr) {
                 former = former->next;
             }
-            former->next = former->next->next;//将前后连接起来
-            free(curr);//删除结点
+            former->next = former->next->next;  //将前后连接起来
+            free(curr);                         //删除结点
             printf("Student Account(stuID %d) Successfully Removed\n", stuID);
             return true;
         }
@@ -114,7 +114,7 @@ bool removeStuAccount(stuList* stulist, int stuID) {
     return false;
 }
 
-//导出到文件系统(由于fscanf()的未知问题, 暂无可配套的import相关函数...)
+//导出到文件系统(终于修好了, 原来是旧的导出文件忘了删了...)
 bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int stuNum) {
     FILE *bookFile, *stuFile;
     //打开输出文件
@@ -132,8 +132,9 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
     for (int bookCnt = 0; bookCnt < bookNum; bookCnt++) {
         if (currBook == NULL)
             break;
-        fprintf(bookFile, "%d\t%s\t", currBook->book->bookID, currBook->book->name);
-        fprintf(bookFile, "%d\t%d\t", currBook->book->totalNum, currBook->book->remainNum);
+        fprintf(bookFile, "%d\n", currBook->book->bookID);
+        fprintf(bookFile, "%d\n%d\n", currBook->book->totalNum, currBook->book->remainNum);
+        fprintf(bookFile, "%s\n", currBook->book->name);
         for (int i = 0; i < currBook->book->totalNum - currBook->book->remainNum; i++) {
             fprintf(bookFile, "%d\t", currBook->book->borrowingStuID[i]);
         }
@@ -146,8 +147,8 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
     fprintf(stuFile, "YuzuSoft\n%d\n", stuNum);
     stuList* currStu = stulist->next;
     for (int i = 0; i < stuNum; i++) {
-        fprintf(stuFile, "%d\t%s\t", currStu->stu->stuID, currStu->stu->name);
-        fprintf(stuFile, "%d\t", currStu->stu->borrowingBookNum);
+        fprintf(stuFile, "%d\t%d\n", currStu->stu->stuID, currStu->stu->borrowingBookNum);
+        fprintf(stuFile, "%s\n", currStu->stu->name);
         for (int borrowingNum = 0; borrowingNum < currStu->stu->borrowingBookNum; borrowingNum++) {
             fprintf(stuFile, "%d\t", currStu->stu->borrowingBooks[borrowingNum]);
         }
@@ -159,7 +160,7 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
     return true;
 }
 
-bool importFromFileSystem(bookList* booklist, stuList* stulist) {
+bool importFromFileSystem(bookList* booklist, stuList* stulist, int* bookNum, int* stuNum) {
     FILE *bookFile, *stuFile;
     bookFile = fopen("book.libdata", "r+");
     stuFile = fopen("stu.libdata", "r+");
@@ -168,14 +169,13 @@ bool importFromFileSystem(bookList* booklist, stuList* stulist) {
     book* bookBuffer = (book*)malloc(sizeof(book));
     student* stuBuffer = (student*)malloc(sizeof(student));
     char* checkFileHeader = (char*)malloc(20 * sizeof(char));
-    int bookNum = 0, stuNum = 0;
 
-    fscanf(bookFile, "%s\n%d\n", checkFileHeader, &bookNum);
+    fscanf(bookFile, "%s\n%d", checkFileHeader, bookNum);
     if (strcmp(checkFileHeader, "Senren*Banka") != 0) {
         printf("Corrupted Book Info File, Nothing Will Be Imported\n");
         fileCorruptFlag = true;
     }
-    fscanf(stuFile, "%s\n%d\n", checkFileHeader, &stuNum);
+    fscanf(stuFile, "%s\n%d", checkFileHeader, stuNum);
     if (strcmp(checkFileHeader, "YuzuSoft") != 0) {
         printf("Corrupted Student Info File, Nothing Will Be Imported\n");
         fileCorruptFlag = true;
@@ -183,26 +183,29 @@ bool importFromFileSystem(bookList* booklist, stuList* stulist) {
     if (fileCorruptFlag)
         return false;
 
-    for (int num = 0; num < bookNum; num++) {
-        fscanf(bookFile, "%d\t%s\t", &bookBuffer->bookID, bookBuffer->name);
-        fscanf(bookFile, "%d%d", &bookBuffer->totalNum, &bookBuffer->remainNum);
+    for (int num = 0; num < *bookNum; num++) {
+        fscanf(bookFile, "%d", &bookBuffer->bookID);
+        fscanf(bookFile, "%d", &bookBuffer->totalNum);
+        fscanf(bookFile, "%d", &bookBuffer->remainNum);
+        fscanf(bookFile, "%s\n", bookBuffer->name);
         for (int i = 0; i < bookBuffer->totalNum - bookBuffer->remainNum; i++) {
-            fscanf(bookFile, "%d\t", &bookBuffer->borrowingStuID[i]);
+            fscanf(bookFile, "%d", &bookBuffer->borrowingStuID[i]);
         }
         addBooks(booklist, bookBuffer);
         bookBuffer = (book*)malloc(sizeof(book));
     }
     fclose(bookFile);
 
-    for (int num = 0; num < stuNum; num++) {
+    for (int num = 0; num < *stuNum; num++) {
         stuBuffer->borrowingBookNum = 0;
         for (int borrowTemp = 0; borrowTemp < 5; borrowTemp++) {
             stuBuffer->borrowingBooks[borrowTemp] = 0;
         }
-        fscanf(stuFile, "%d\t%s\t%d\t", &stuBuffer->stuID, stuBuffer->name, &stuBuffer->borrowingBookNum);
+        fscanf(stuFile, "%d\t%d\n", &stuBuffer->stuID, &stuBuffer->borrowingBookNum);
+        fscanf(stuFile, "%s\n", stuBuffer->name);
         for (int borrowingCnt = 0; borrowingCnt < stuBuffer->borrowingBookNum; borrowingCnt++) {
             fscanf(stuFile, "%d", &stuBuffer->borrowingBooks[borrowingCnt]);
-            fgetc(stuFile);
+            //fgetc(stuFile);
         }
         addStuAccount(stulist, stuBuffer);
         stuBuffer = (student*)malloc(sizeof(student));

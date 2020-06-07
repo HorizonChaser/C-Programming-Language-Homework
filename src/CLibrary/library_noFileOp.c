@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
     stuList* curr = stulist->next;
 
 //Debug用
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
     //因为在VSCode中编译选项和运行时的参数是在settings.json里面预先规定好的
     //因此难以方便地指定参数, 所以在这里指定好
