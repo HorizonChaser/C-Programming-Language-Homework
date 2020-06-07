@@ -4,6 +4,9 @@
 #include "books.h"
 #include "structs.h"
 
+///管理员账户的相关函数
+
+//添加一本书
 bool addBooks(bookList* lib, book* newBook) {
     bookList* curr = lib;
     while (true) {
@@ -35,6 +38,7 @@ bool addBooks(bookList* lib, book* newBook) {
     return true;
 }
 
+//删除一本书, 但是必须没有人在借阅
 bool removeBook(bookList* booklist, int bookID) {
     bookList* curr = booklist;
     while (curr->next != NULL) {
@@ -49,11 +53,11 @@ bool removeBook(bookList* booklist, int bookID) {
             printlnBook(*searchBookByBookID(booklist, bookID));
 
             bookList* former = booklist;
-            while (former->next != curr) {
+            while (former->next != curr) {//找到这本书在链表上的前一个结点
                 former = former->next;
             }
-            former->next = former->next->next;
-            free(curr);
+            former->next = former->next->next;//将前一个结点和后一个结点连接起来
+            free(curr);//删除当前节点
             printf("Book(bookID %d) Successfully Removed\n", bookID);
             return false;
         }
@@ -63,6 +67,7 @@ bool removeBook(bookList* booklist, int bookID) {
     return false;
 }
 
+//添加一个学生账户
 bool addStuAccount(stuList* stulist, student* newStuAcc) {
     stuList* curr = stulist;
     while (curr->next != NULL) {
@@ -77,12 +82,14 @@ bool addStuAccount(stuList* stulist, student* newStuAcc) {
         }
     }
     stuList* newNode = (stuList*)malloc(sizeof(stuList));
+    //将新的账户挂到链表最后面
     newNode->stu = newStuAcc;
     newNode->next = NULL;
     curr->next = newNode;
     return true;
 }
 
+//删除学生账户, 要求该账户没有在借图书
 bool removeStuAccount(stuList* stulist, int stuID) {
     stuList* curr = stulist;
     while (curr->next != NULL) {
@@ -96,8 +103,8 @@ bool removeStuAccount(stuList* stulist, int stuID) {
             while (former->next != curr) {
                 former = former->next;
             }
-            former->next = former->next->next;
-            free(curr);
+            former->next = former->next->next;//将前后连接起来
+            free(curr);//删除结点
             printf("Student Account(stuID %d) Successfully Removed\n", stuID);
             return true;
         }
@@ -107,8 +114,10 @@ bool removeStuAccount(stuList* stulist, int stuID) {
     return false;
 }
 
+//导出到文件系统(由于fscanf()的未知问题, 暂无可配套的import相关函数...)
 bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int stuNum) {
     FILE *bookFile, *stuFile;
+    //打开输出文件
     bookFile = fopen("book.libdata", "w+");
     stuFile = fopen("stu.libdata", "w+");
 
@@ -117,6 +126,7 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
         return false;
     }
 
+    //校验用文件头, 检测文件是否损坏
     fprintf(bookFile, "Senren*Banka\n%d\n", bookNum);
     bookList* currBook = booklist->next;
     for (int bookCnt = 0; bookCnt < bookNum; bookCnt++) {

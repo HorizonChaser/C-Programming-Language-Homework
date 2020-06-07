@@ -8,6 +8,7 @@
 #include "books.h"
 #include "stuAccount.h"
 
+//打印全部的图书
 void printallBook(bookList* booklist) {
     if (booklist == NULL || booklist->next == NULL) {
         printf("No Existing Books\n");
@@ -21,6 +22,7 @@ void printallBook(bookList* booklist) {
     }
 }
 
+//初始化图书链表
 bookList* initializeBookList(void) {
     bookList* head = (bookList*)malloc(sizeof(bookList));
     head->book = NULL;
@@ -28,6 +30,7 @@ bookList* initializeBookList(void) {
     return head;
 }
 
+//初始化学生链表
 stuList* initializeStuList(void) {
     stuList* head = (stuList*)malloc(sizeof(stuList));
     head->stu = NULL;
@@ -35,6 +38,7 @@ stuList* initializeStuList(void) {
     return head;
 }
 
+//显示学生的欢迎菜单
 void showStudentMenu(student* currStudent) {
     printf("┌-----| Welcome to use C Library written by HorizonChaser |-----┐\n");
     printf("├---------------------------------------------------------------┤\n");
@@ -52,6 +56,7 @@ void showStudentMenu(student* currStudent) {
     printf("└---------------------------------------------------------------┘\n");
 }
 
+//显示管理员的欢迎菜单
 void showAdminMenu(void) {
     printf("┌-----| Welcome to use C Library written by HorizonChaser |-----┐\n");
     printf("├---------------------------------------------------------------┤\n");
@@ -68,10 +73,13 @@ void showAdminMenu(void) {
     printf("|         7. Search A Book by Book Name                         |\n");
     printf("|         8. List All Existing Books in the Library             |\n");
     printf("|         9. View Borrower List of An Existing Book             |\n");
-    printf("|         0. Exit the C Library                                 |\n");
+    printf("|         10.Change Info of An Existing Book                    |\n");
+    printf("|         11.Change Name of An Student Account                  |\n");
+    printf("|         12.Exit the C Library                                 |\n");
     printf("└---------------------------------------------------------------┘\n");
 }
 
+//退出并致谢
 void exitLibrary(void) {
     printf("-----------------------| Acknowledgement |------------------------\n");
     printf("Thanks for using this C Library Simulator written by HorizonChaser\n");
@@ -81,6 +89,7 @@ void exitLibrary(void) {
     exit(0);
 }
 
+//暂停控制台, 避免输出被覆盖
 void pauseConsole(void) {
     printf("[Press ENTER To Continue]\n");
     getchar();
@@ -88,15 +97,18 @@ void pauseConsole(void) {
 }
 
 int main(int argc, char* argv[]) {
+    //初始化两个链表
     bookList* booklist = initializeBookList();
     stuList* stulist = initializeStuList();
     int choice = -1;
 
+    //预先添加好图书
     book* book2 = initializeBook("Head First Java", 1001, 20);
     book* book1 = initializeBook("Design Patterns", 1002, 30);
     student* stu1 = initializeStuAccount(1909, "Stable");
     student* stu2 = initializeStuAccount(2004, "Preview");
 
+    //模拟图书馆操作
     addBooks(booklist, book1);
     addBooks(booklist, book2);
     addStuAccount(stulist, stu1);
@@ -105,6 +117,7 @@ int main(int argc, char* argv[]) {
     borrowBook(booklist, 1002, stu1);
     borrowBook(booklist, 1002, stu2);
 
+    //使用到的变量
     char* newBookName = (char*)malloc(20 * sizeof(char));
     char* newStuName = (char*)malloc(20 * sizeof(char));
     int newBookID = -1, newBookAmount = -1;
@@ -112,23 +125,30 @@ int main(int argc, char* argv[]) {
     int newStuID = -1;
     int deleteStuID = -1;
     int bookIDToBeSearched = -1;
+    int bookIDToBeChanged = -1;
+    int stuIDToBeChanged = -1;
     int bookIDToViewBorrowers = -1;
     char* bookNameToBeSearched = (char*)malloc(20 * sizeof(char));
     stuList* curr = stulist->next;
 
+//Debug用
 #define DEBUG
 #ifdef DEBUG
-    argv[1] = "-u";
-    argv[2] = "2004";
+    //因为在VSCode中编译选项和运行时的参数是在settings.json里面预先规定好的
+    //因此难以方便地指定参数, 所以在这里指定好
+    argv[1] = "-a";
+    argv[2] = "admin";
     argc = 3;
 #endif
 
+//将输出代码页切换到UTF-8, 避免乱码
+//但是GDB下执行这俩命令会出现异常, 所以放到预处理里面
 #ifndef DEBUG
     system("chcp 65001");
     system("cls");
 #endif
 
-    if (argc < 3) {
+    if (argc < 3) {  //参数数量不足
         printf("Missing Necessary Arguments\n");
         printf("Usage:  Libsim -a/-u USERNAME\n");
         printf("    -a          Login as Administrator\n");
@@ -138,7 +158,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "-a") == 0) {
-        if (strcmp(argv[2], "admin") != 0) {
+        if (strcmp(argv[2], "admin") != 0) {  //管理员用户名不正确
             printf("Admin Name Incorrect.\nFailed to Login\n");
             return -1;
         }
@@ -244,7 +264,39 @@ int main(int argc, char* argv[]) {
                     pauseConsole();
                     break;
 
-                case 0:
+                case 10:
+                    printf("Please Input The ID of The Book You Want To Change: ");
+                    scanf("%d", &bookIDToBeChanged);
+                    if (searchBookByBookID(booklist, bookIDToBeChanged) == NULL) {
+                        printf("Book with Given ID Not Found: %d", bookIDToBeChanged);
+                        printf("Failed to Change Book Info\n");
+                    } else {
+                        if (editBookInfo(searchBookByBookID(booklist, bookIDToBeChanged)) == true) {
+                            printf("Successfully Changed Book Info\n");
+                        } else {
+                            printf("Failed to Change Book Info\n");
+                        }
+                    }
+                    pauseConsole();
+                    break;
+
+                case 11:
+                    printf("Please Input The ID of The Student You Want To Change: ");
+                    scanf("%d", &stuIDToBeChanged);
+                    if(searchStuAccountByStuID(stulist, stuIDToBeChanged) == NULL) {
+                        printf("Student with Given ID Not Found: %d\n", stuIDToBeChanged);
+                        printf("Failed To Change Student Info\n");
+                    } else {
+                        if(editStuInfo(stulist, searchStuAccountByStuID(stulist, stuIDToBeChanged)) == true) {
+                            printf("Successfully Changed Student Info\n");
+                        } else {
+                            printf("Failed to Change Student Info\n");
+                        }
+                    }
+                    pauseConsole();
+                    break;
+
+                case 12:
                     exitLibrary();
                     pauseConsole();
                     break;
@@ -259,7 +311,7 @@ int main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "-u") == 0) {
         int inBorrowBookID = -1, inReturnBookID = -1;
-        student* currStudent = searchStuAccountByStuID(stulist, atoi(argv[2]));
+        student* currStudent = searchStuAccountByStuID(stulist, atoi(argv[2]));  //根据参数查找对应ID的学生账号
         if (currStudent == NULL) {
             printf("Student with Given stuID Not Found\nFailed to Login\n");
             exit(0);
@@ -281,7 +333,7 @@ int main(int argc, char* argv[]) {
                 case 2:
                     printf("Please Input ID of The Book You Want To Return: ");
                     scanf("%d", &inReturnBookID);
-                    if(returnBook(booklist, inReturnBookID, currStudent) == false) {
+                    if (returnBook(booklist, inReturnBookID, currStudent) == false) {
                         printf("Failed to Return Book\n");
                     }
                     pauseConsole();
@@ -305,13 +357,13 @@ int main(int argc, char* argv[]) {
                     pauseConsole();
                     break;
 
-                case 5: 
+                case 5:
                     printf("Please Input The Name of The Book To Be Searched: ");
                     scanf("%s", bookNameToBeSearched);
                     searchBookByName(booklist, bookNameToBeSearched);
                     pauseConsole();
                     break;
-                
+
                 case 6:
                     printlnSheetTitle();
                     printallBook(booklist);
