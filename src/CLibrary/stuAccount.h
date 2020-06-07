@@ -5,11 +5,11 @@
 #include "structs.h"
 
 student* initializeStuAccount(int inStuID, char* inName) {
-    if(inStuID <= 0) {
+    if (inStuID <= 0) {
         printf("Invalid stuID(<=0): %d, It Should Be Above 0\n", inStuID);
         return NULL;
     }
-    if(strchr(inName, ' ') != NULL) {
+    if (strchr(inName, ' ') != NULL) {
         printf("Invalid Name: %s, SPACE Not Allowed\n", inName);
         return NULL;
     }
@@ -27,11 +27,18 @@ student* initializeStuAccount(int inStuID, char* inName) {
 bool borrowBook(bookList* lib, int bookID, student* student) {
     bookList* curr = lib->next;
     if (curr == NULL || curr->next == NULL) {
-        printf("No Existing Books\n");
+        printf("No Existing Books in The Library\n");
         return false;
     }
     while (curr != NULL) {
         if (curr->book->bookID == bookID) {
+            for (int i = 0; i < 5; i++) {
+                if (student->borrowingBooks[i] == bookID) {
+                    printf("You Have Borrowed The Same Book.\n");
+                    return false;
+                }
+            }
+
             if (curr->book->remainNum >= 1 && student->borrowingBookNum <= 5) {
                 curr->book->remainNum--;
                 curr->book->borrowingStuID[curr->book->totalNum -
@@ -94,13 +101,13 @@ bool returnBook(bookList* booklist, int BookID, student* stu) {
 
 void printAllBorringBooks(student* stu, bookList* booklist) {
     if (stu->borrowingBookNum == 0) {
-        printf("You Haven't Borrowed Any Book Yet. Nothing to Show.\n");
+        printf("Name: %s  Currently Borrowing %d Books\nNothing to Show\n", stu->name, stu->borrowingBookNum);
         for (int i = 0; i < 5; i++) {
             stu->borrowingBooks[i] = -1;
         }
         return;
     }
-    printf("You're Borrowing %d Book(s) Currently.\nDetails Are As Follows.\n", stu->borrowingBookNum);
+    printf("Name: %s  Currently Borrowing %d Books\n", stu->name, stu->borrowingBookNum);
     printlnSheetTitle();
     for (int i = 0; i < stu->borrowingBookNum; i++) {
         printlnBook(*searchBookByBookID(booklist, stu->borrowingBooks[i]));
@@ -109,8 +116,8 @@ void printAllBorringBooks(student* stu, bookList* booklist) {
 
 student* searchStuAccountByStuID(stuList* stulist, int stuID) {
     stuList* curr = stulist->next;
-    while(curr != NULL) {
-        if(curr->stu->stuID == stuID)
+    while (curr != NULL) {
+        if (curr->stu->stuID == stuID)
             return curr->stu;
         curr = curr->next;
     }
@@ -118,13 +125,13 @@ student* searchStuAccountByStuID(stuList* stulist, int stuID) {
 }
 
 void viewBorrowers(stuList* stulist, book* book) {
-    if(book->totalNum == book->remainNum) {
+    if (book->totalNum == book->remainNum) {
         printf("This Book Hasn't Been Borrowed Yet. Nothing to Show.\n");
         return;
     }
     int borrowNum = book->totalNum - book->remainNum;
-    for (int i = 0; i < borrowNum;i++) {
-        printf("stuID\tName\n----------------\n");
+    printf("stuID\tName\n----------------\n");
+    for (int i = 0; i < borrowNum; i++) {
         student* currStudent = searchStuAccountByStuID(stulist, book->borrowingStuID[i]);
         printf("%d\t%s\n", currStudent->stuID, currStudent->name);
     }

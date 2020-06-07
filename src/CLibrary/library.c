@@ -1,6 +1,8 @@
+#include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "adminAccount.h"
 #include "books.h"
@@ -34,22 +36,36 @@ stuList* initializeStuList(void) {
 }
 
 int main(int argc, char* argv[]) {
-    char* author[5];
-    author[0] = "dsv\0";
-    author[1] = "dev2\0";
-    book* book2 = initializeBook("test", author, 2, 10, 20);
-    book* book1 = initializeBook("asd", author, 1, 11, 20);
+    bookList* booklist = initializeBookList();
+    stuList* stulist = initializeStuList();
+
+    if (access("book.libdata", R_OK) == 0 && access("book.libdata", R_OK) == 0) {
+        printf("Data File Exists. Import Now?(Y/N): \n");
+        char inChoice;
+        scanf("%c", &inChoice);
+        if (inChoice == 'y' || inChoice == 'Y') {
+            if (importFromFileSystem(booklist, stulist) == true)
+                printf("Data Successfully Imported.\n");
+            else
+                printf("Failed To Import From File System.\n");
+        }
+    }
+
+    book* book2 = initializeBook("test", 10, 20);
+    book* book1 = initializeBook("asd", 11, 20);
     student* stu1 = initializeStuAccount(1002, "tester01");
     student* stu2 = initializeStuAccount(1003, "tester02");
 
-    bookList* booklist = initializeBookList();
-    stuList* stulist = initializeStuList();
+//#define DEBUG
+
+#ifdef DEBUG
     addBooks(booklist, book1);
     addBooks(booklist, book2);
     addStuAccount(stulist, stu1);
     addStuAccount(stulist, stu2);
     borrowBook(booklist, 10, stu1);
     borrowBook(booklist, 11, stu1);
+#endif
 
     if (argc < 0) {
         printf("Missing Necessary Arguments\n");
@@ -59,11 +75,8 @@ int main(int argc, char* argv[]) {
         printf("    USERNAME    User Name\n");
         return -1;
     }
-
-    exportToFileSystem(booklist, stulist, 2, 2);
-    importFromFileSystem(booklist, stulist);
     printallBook(booklist);
-
+    exportToFileSystem(booklist, stulist, 2, 2);
     student* currStudent = stu1;
     printf("┌-----| Welcome to use C Library written by HorizonChaser |-----┐\n");
     printf("├---------------------------------------------------------------┤\n");

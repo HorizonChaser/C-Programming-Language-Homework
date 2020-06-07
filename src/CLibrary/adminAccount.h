@@ -20,15 +20,8 @@ bool addBooks(bookList* lib, book* newBook) {
             }
 
             if (bookCompare(*curr->book, *newBook) == 0) {
-                printf("Same Book Already Exists. Add to them?(Y/N): ");
-                char choice;
-                scanf("%c", &choice);
-                if (choice == 'Y' || choice == 'y') {
-                    curr->book->remainNum += newBook->remainNum;
-                    curr->book->totalNum += newBook->totalNum;
-                    return true;
-                } else
-                    return false;
+                printf("Same Book Already Exists, Casuing Conflicts.\n");
+                return false;
             }
         }
         if (curr->next == NULL)
@@ -126,18 +119,15 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
 
     fprintf(bookFile, "Senren*Banka\n%d\n", bookNum);
     bookList* currBook = booklist->next;
-    for (int i = 0; i < bookNum; i++) {
+    for (int bookCnt = 0; bookCnt < bookNum; bookCnt++) {
         if (currBook == NULL)
             break;
-        fprintf(bookFile, "%d\t%s\t%d\t", currBook->book->bookID, currBook->book->name, currBook->book->authorNum);
+        fprintf(bookFile, "%d\t%s\t", currBook->book->bookID, currBook->book->name);
         fprintf(bookFile, "%d\t%d\t", currBook->book->totalNum, currBook->book->remainNum);
         for (int i = 0; i < currBook->book->totalNum - currBook->book->remainNum; i++) {
-            fprintf(bookFile, "%d,", currBook->book->borrowingStuID[i]);
+            fprintf(bookFile, "%d\t", currBook->book->borrowingStuID[i]);
         }
-        fprintf(bookFile, "\t");
-        for (int authorCnt = 0; authorCnt < currBook->book->authorNum; authorCnt++) {
-            fprintf(bookFile, "%s,", currBook->book->author[authorCnt]);
-        }
+        //fprintf(bookFile, "\t");
         fprintf(bookFile, "\n");
         currBook = currBook->next;
     }
@@ -149,7 +139,7 @@ bool exportToFileSystem(bookList* booklist, stuList* stulist, int bookNum, int s
         fprintf(stuFile, "%d\t%s\t", currStu->stu->stuID, currStu->stu->name);
         fprintf(stuFile, "%d\t", currStu->stu->borrowingBookNum);
         for (int borrowingNum = 0; borrowingNum < currStu->stu->borrowingBookNum; borrowingNum++) {
-            fprintf(stuFile, "%d,", currStu->stu->borrowingBooks[borrowingNum]);
+            fprintf(stuFile, "%d\t", currStu->stu->borrowingBooks[borrowingNum]);
         }
         fprintf(stuFile, "\n");
         currStu = currStu->next;
@@ -164,7 +154,6 @@ bool importFromFileSystem(bookList* booklist, stuList* stulist) {
     bookFile = fopen("book.libdata", "r+");
     stuFile = fopen("stu.libdata", "r+");
     bool fileCorruptFlag = false;
-    srand(0);
 
     book* bookBuffer = (book*)malloc(sizeof(book));
     student* stuBuffer = (student*)malloc(sizeof(student));
@@ -185,13 +174,10 @@ bool importFromFileSystem(bookList* booklist, stuList* stulist) {
         return false;
 
     for (int num = 0; num < bookNum; num++) {
-        fscanf(bookFile, "%d\t%s\t%d\t", &bookBuffer->bookID, bookBuffer->name, &bookBuffer->authorNum);
-        fscanf(bookFile, "%d\t%d\t", &bookBuffer->totalNum, &bookBuffer->remainNum);
+        fscanf(bookFile, "%d\t%s\t", &bookBuffer->bookID, bookBuffer->name);
+        fscanf(bookFile, "%d%d", &bookBuffer->totalNum, &bookBuffer->remainNum);
         for (int i = 0; i < bookBuffer->totalNum - bookBuffer->remainNum; i++) {
-            fscanf(bookFile, "%d,", &bookBuffer->borrowingStuID[i]);
-        }
-        for (int authorCnt = 0; authorCnt < bookBuffer->authorNum; authorCnt++) {
-            fscanf(bookFile, "%s,", bookBuffer->author[authorCnt]);
+            fscanf(bookFile, "%d\t", &bookBuffer->borrowingStuID[i]);
         }
         addBooks(booklist, bookBuffer);
         bookBuffer = (book*)malloc(sizeof(book));
@@ -199,13 +185,19 @@ bool importFromFileSystem(bookList* booklist, stuList* stulist) {
     fclose(bookFile);
 
     for (int num = 0; num < stuNum; num++) {
+        stuBuffer->borrowingBookNum = 0;
+        for (int borrowTemp = 0; borrowTemp < 5; borrowTemp++) {
+            stuBuffer->borrowingBooks[borrowTemp] = 0;
+        }
         fscanf(stuFile, "%d\t%s\t%d\t", &stuBuffer->stuID, stuBuffer->name, &stuBuffer->borrowingBookNum);
-        for (int borrowingCnt = 0; borrowingCnt < stuBuffer->borrowingBookNum;borrowingCnt++) {
-            fscanf(stuFile, "%d,", &stuBuffer->borrowingBooks[borrowingCnt]);
+        for (int borrowingCnt = 0; borrowingCnt < stuBuffer->borrowingBookNum; borrowingCnt++) {
+            fscanf(stuFile, "%d", &stuBuffer->borrowingBooks[borrowingCnt]);
+            fgetc(stuFile);
         }
         addStuAccount(stulist, stuBuffer);
         stuBuffer = (student*)malloc(sizeof(student));
     }
+    fclose(stuFile);
     return true;
 }
 

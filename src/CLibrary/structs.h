@@ -8,8 +8,6 @@
 
 typedef struct Book {
     char name[20];
-    char author[5][20];
-    int authorNum;
     int bookID;
     int totalNum;
     int remainNum;
