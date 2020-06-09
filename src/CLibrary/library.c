@@ -1,5 +1,6 @@
 #include <io.h>
 #include <stdio.h>
+//#include <stdio_s.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -10,7 +11,7 @@
 
 ///主程序, Debug部分的预处理指令没有删除
 ///可以看到思路 : )
-///总计931行
+///总计932行(最后的彩蛋就不算啦)
 
 //打印全部的图书
 void printallBook(bookList* booklist) {
@@ -101,6 +102,7 @@ void pauseConsole(void) {
     printf("[Press ENTER To Continue]\n");
     getchar();
     getchar();
+    //system("cls");
 }
 
 int main(int argc, char* argv[]) {
@@ -115,8 +117,8 @@ int main(int argc, char* argv[]) {
 #ifdef DEBUG
     //因为在VSCode中编译选项和运行时的参数是在settings.json里面预先规定好的
     //因此难以方便地指定参数, 所以在这里指定好
-    argv[1] = "-u";
-    argv[2] = "1511";
+    argv[1] = "-a";
+    argv[2] = "admin";
     argc = 3;
 #endif
 
@@ -172,8 +174,9 @@ int main(int argc, char* argv[]) {
     }
 
     //使用到的变量
-    char* newBookName = (char*)malloc(20 * sizeof(char));
-    char* newStuName = (char*)malloc(20 * sizeof(char));
+
+    char* newBookName = (char*)malloc(40 * sizeof(char));
+    char* newStuName = (char*)malloc(40 * sizeof(char));
     char dataChioce = '\0';
     int newBookID = -1, newBookAmount = -1;
     int deleteBookID = -1;
@@ -198,13 +201,17 @@ int main(int argc, char* argv[]) {
             switch (choice) {
                 case 1:
                     printf("Please Input The Book Name(Max Length 20 chars): ");
-                    scanf("%s", newBookName);
+                    getchar();//吞掉回车
+                    gets(newBookName);
+                    //因为输入可能有空格, 而scanf() + %s在这时会停下来, 所以用gets()
+                    //但是gets()可能有缓冲区溢出的问题, 而GCC 8.1.0 -std=c11似乎默认不支持gets_s(), 即使在stdio_s.h中给出了声明
+                    //所以只能使用gets(), 配合40个char的缓冲区尽可能避免溢出了...
                     printf("Please Input The Book ID(ID > 0): ");
                     scanf("%d", &newBookID);
                     printf("Please Input Amount of The Book: ");
                     scanf("%d", &newBookAmount);
                     book* newBook = initializeBook(newBookName, newBookID, newBookAmount);
-                    if (addBooks(booklist, newBook) == true) {
+                    if (newBook != NULL && addBooks(booklist, newBook) == true) {
                         bookNum++;
                         printf("Siccessfully Added Books to The Library\n");
                     } else {
@@ -225,6 +232,7 @@ int main(int argc, char* argv[]) {
                 case 3:
                     while (true) {
                         if (curr == NULL || curr->stu == NULL) {
+                            printf("No Student Accounts Currently\nNothing to Show\n");
                             break;
                         }
                         printf("\n");
@@ -348,6 +356,8 @@ int main(int argc, char* argv[]) {
                         } else {
                             printf("Failed to Import From File System\n");
                         }
+                    } else {
+                        printf("Unrecongized Invalid Chioce: %c", dataChioce);
                     }
                     pauseConsole();
                     break;
@@ -372,7 +382,7 @@ int main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "-u") == 0) {
         int inBorrowBookID = -1, inReturnBookID = -1;
-        student* currStudent = searchStuAccountByStuID(stulist, atoi(argv[2]));  //根据参数查找对应ID的学生账号
+        student* currStudent = searchStuAccountByStuID(stulist, atoi(argv[2]));  //根据参数查找对应ID的学生账号作为当前用户
         if (currStudent == NULL) {
             printf("Student with Given stuID Not Found\nFailed to Login\n");
             exit(0);
@@ -442,5 +452,23 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+    printf("Unrecognized Option: %s", argv[1]);
     return 0;
 }
+
+/***
+ *      _    _            _                   _____ _                           _____                          _       
+ *     | |  | |          (_)                 / ____| |                         |  __ \                        | |      
+ *     | |__| | ___  _ __ _ _______  _ __   | |    | |__   __ _ ___  ___ _ __  | |__) | __ ___  ___  ___ _ __ | |_ ___ 
+ *     |  __  |/ _ \| '__| |_  / _ \| '_ \  | |    | '_ \ / _` / __|/ _ \ '__| |  ___/ '__/ _ \/ __|/ _ \ '_ \| __/ __|
+ *     | |  | | (_) | |  | |/ / (_) | | | | | |____| | | | (_| \__ \  __/ |    | |   | | |  __/\__ \  __/ | | | |_\__ \
+ *     |_|__|_|\___/|_|  |_/___\___/|_| |_|  \_____|_| |_|\__,_|___/\___|_|    |_|   |_|  \___||___/\___|_| |_|\__|___/                                                                                                   
+ *       ___  ___ ___   ___              ___    __              ___ ______                                             
+ *     |__ \ / _ \__ \ / _ \            / _ \  / /             / _ \____  |                                            
+ *        ) | | | | ) | | | |  ______  | | | |/ /_    ______  | | | |  / /                                             
+ *       / /| | | |/ /| | | | |______| | | | | '_ \  |______| | | | | / /                                              
+ *      / /_| |_| / /_| |_| |          | |_| | (_) |          | |_| |/ /                                               
+ *     |____|\___/____|\___/            \___/ \___/            \___//_/                                                
+ *                                                                                                                     
+ *                                                                                                                     
+ */                                                                                                               

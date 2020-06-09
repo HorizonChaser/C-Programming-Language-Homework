@@ -8,19 +8,19 @@
 
 //图书
 typedef struct Book {
-    char name[20];//书名
-    int bookID;//ID
-    int totalNum;//总量
-    int remainNum;//余量
-    int borrowingStuID[50];//借书人名单
+    char name[20];           //书名
+    int bookID;              //ID
+    int totalNum;            //总量
+    int remainNum;           //余量
+    int borrowingStuID[50];  //借书人名单
 } book;
 
 //学生
 typedef struct Student {
-    int stuID;//学号
-    char name[20];//姓名
-    int borrowingBooks[5];//借书清单
-    int borrowingBookNum;//借书数量
+    int stuID;              //学号
+    char name[20];          //姓名
+    int borrowingBooks[5];  //借书清单
+    int borrowingBookNum;   //借书数量
 } student;
 
 //学生链表

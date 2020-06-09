@@ -12,6 +12,11 @@ book* initializeBook(const char* name, int bookID, int totalNum) {
         return NULL;
     }
 
+    if(strchr(name, ' ') != NULL) {
+        printf("SPACE Not Allowed\n");
+        return NULL;
+    }
+
     book* newBook = (book*)malloc(sizeof(book));  //分配内存
     strcpy(newBook->name, name);                  //复制名称
     newBook->bookID = bookID;
