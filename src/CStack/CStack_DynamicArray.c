@@ -1,3 +1,10 @@
+/*
+ * !WARNING!
+`* This Version is Deprecated
+ * It has unsovled Segment Fault
+ * Try LinkedList Version
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
