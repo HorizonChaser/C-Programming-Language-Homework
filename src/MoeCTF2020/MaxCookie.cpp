@@ -20,7 +20,7 @@ int getMaxSubStrLeng(string inStr) {
         if (currContent.find(inStr[currEnd]) == currContent.npos) {
             currContent.insert(currContent.end(), inStr[currEnd]);
             currEnd++;
-            max = getMax(max, currEnd - currBegin);//更新最大值
+            max = getMax(max, currEnd - currBegin);  //更新最大值
         } else {
             //cout << currContent.find(inStr[currBegin]) << endl;
             currContent.erase(currContent.find(inStr[currBegin]), 1);
@@ -35,6 +35,6 @@ int getMaxSubStrLeng(string inStr) {
 
 int main(void) {
     string inStr;
-    cin >> inStr;
+    getline(cin, inStr);
     cout << getMaxSubStrLeng(inStr) << endl;
 }
