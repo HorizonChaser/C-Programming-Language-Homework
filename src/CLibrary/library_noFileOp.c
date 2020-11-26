@@ -283,11 +283,11 @@ int main(int argc, char* argv[]) {
                 case 11:
                     printf("Please Input The ID of The Student You Want To Change: ");
                     scanf("%d", &stuIDToBeChanged);
-                    if(searchStuAccountByStuID(stulist, stuIDToBeChanged) == NULL) {
+                    if (searchStuAccountByStuID(stulist, stuIDToBeChanged) == NULL) {
                         printf("Student with Given ID Not Found: %d\n", stuIDToBeChanged);
                         printf("Failed To Change Student Info\n");
                     } else {
-                        if(editStuInfo(stulist, searchStuAccountByStuID(stulist, stuIDToBeChanged)) == true) {
+                        if (editStuInfo(stulist, searchStuAccountByStuID(stulist, stuIDToBeChanged)) == true) {
                             printf("Successfully Changed Student Info\n");
                         } else {
                             printf("Failed to Change Student Info\n");

@@ -2,30 +2,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//¶¨ÒåÁ´±í½Úµã
-typedef struct LNode {
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
+typedef struct LinkListNode {
     int data;
-    struct LNode *next;
-} LNode, *Linklist;
+    struct LinkListNode *next;
+} LinkListNode, *Linklist;
 
-//´´½¨Á´±í
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Linklist create() {
-    int i, n;  //iÓÃÓÚÏÂÃæÑ­»·,nÓÃÀ´´æ·ÅÓÐÐ§½ÚµãµÄ×ÖÊý
+    int i, n;  //iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½,nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Linklist p, L;
     scanf("%d", &n);
-    L = (Linklist)malloc(sizeof(LNode));  // ·ÖÅäÒ»¸ö²»´æ·ÅÓÐÐ§Êý¾ÝµÄÍ·½áµã
+    L = (Linklist)malloc(sizeof(LinkListNode));  // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½Ýµï¿½Í·ï¿½ï¿½ï¿½
     L->next = NULL;
     for (i = 0; i < n; i++) {
-        p = (Linklist)malloc(sizeof(LNode));  //Éú³ÉÐÂ½Úµã
-        scanf("%d", &p->data);                //ÊäÈëÔªËØÖµ
+        p = (Linklist)malloc(sizeof(LinkListNode));  //ï¿½ï¿½ï¿½ï¿½ï¿½Â½Úµï¿½
+        scanf("%d", &p->data);                //ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½Öµ
         p->next = L->next;
         L->next = p;
     }
-    return L;  //·µ»ØÍ·½Úµã ;
+    return L;  //ï¿½ï¿½ï¿½ï¿½Í·ï¿½Úµï¿½ ;
 }
 
-//Á´±í·´×ªÊä³ö
-Linklist ReverseList(Linklist L, int st)  //stÎª1Ê±Êä³ö½áµãÊý¾Ý
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½
+Linklist ReverseList(Linklist L, int st)  //stÎª1Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
     if (L->next != NULL)
         ReverseList(L->next, 1);
