@@ -11,19 +11,26 @@ typedef struct {
 } vertex;
 
 int compareEdgesByWeight(const void *a, const void *b) {
-    return ((edge *)a)->weight - ((edge *)b)->weight;
+    return ((edge *) a)->weight - ((edge *) b)->weight;
 }
 
 int getVtxSignByVal(vertex *vtx, int val) {
     return vtx[val].sign;
 }
 
+int getEnd(const int ends[], int i) {
+    while (ends[i] != 0) {
+        i = ends[i];
+    }
+    return i;
+}
+
 int main() {
-    int n, m, ansEdges = 0, ansVtxs = 0;
+    int n, m, ansEdges = 0, ansVtxs = 0,  ends[100] =  {0};
     cin >> n >> m;
     edge edges[100], minTree[100];
     vertex vtx[100];
-    set<int> ansVtx;
+  
     for (int i = 0; i < m; ++i) {
         int _begin, _end, _weight;
         cin >> _begin >> _end >> _weight;
@@ -38,30 +45,41 @@ int main() {
     qsort(edges, m, sizeof(edge), compareEdgesByWeight);
 
     for (int i = 0; i < m; ++i) {
-        if (ansVtxs == n)
-            break;
         if (getVtxSignByVal(vtx, edges[i].begin) == getVtxSignByVal(vtx, edges[i].end)) {
             continue;
         } else {
+
+            int p1 = edges[i].begin;
+            int p2 = edges[i].end;
+
+            int mm = getEnd(ends, p1);
+            int nn = getEnd(ends, p2);
+            if (mm != nn) {
+                ends[mm] = nn;
+                minTree[ansEdges++] = edges[i];
+            }
+            ansVtxs++;
+            /*
             minTree[ansEdges++] = edges[i];
             ansVtx.insert(edges[i].begin);
             ansVtx.insert(edges[i].end);
-            /*
+
+            / *
             minTree[ansEdges].begin = edges[i].begin;
             minTree[ansEdges].end = edges[i].end;
             minTree[ansEdges].weight = edges[i].weight;
             ansEdges++;
-            */
+            * /
 
             ansVtxs++;
 
-            /*
+            / *
             int ee = edges[i].end, eb = edges[i].begin;
             vtx[ee].sign = vtx[eb].sign;
-            */
+            * /
 
             set<int>::iterator ansVtxIter = ansVtx.begin();
-            while (ansVtxIter != ansVtx.end()){
+            while (ansVtxIter != ansVtx.end()) {
                 for (int k = 0; k < ansEdges; ++k) {
                     if (minTree[k].end == *ansVtxIter) {
                         vtx[*ansVtxIter].sign = vtx[minTree[k].begin].sign;
@@ -76,6 +94,8 @@ int main() {
                 }
                 ansVtxIter++;
             }
+
+            */
         }
     }
 
@@ -87,6 +107,5 @@ int main() {
             cout << b << " " << a << " " << c;
         cout << endl;
     }
-
     return 0;
 }
