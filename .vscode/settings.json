@@ -110,5 +110,6 @@
         "locale": "cpp",
         "queue": "cpp",
         "stack": "cpp"
-    }, // 格式化时调整include的顺序（按字母排序）
+    },
+    "python.pythonPath": "C:\\Python38\\python.exe", // 格式化时调整include的顺序（按字母排序）
 }

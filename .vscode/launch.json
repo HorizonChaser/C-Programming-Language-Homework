@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch simplrReg",
+            "request": "launch",
+            "mainClass": "src.CTF.simplrReg",
+            "projectName": "vscode-workspace_9f7ef249"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - test",
             "request": "launch",
             "mainClass": "test",
